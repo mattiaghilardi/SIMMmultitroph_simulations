@@ -104,40 +104,40 @@ targets::tar_read(plot_sample_size_source)
 This repository is structured as follow:
 
 - [:file_folder:
-  figures/](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/tree/master/figures):
+  figures/](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/tree/main/figures):
   contains all the figures created by the pipeline and saved with the
   script
-  [save_figures.R](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/master/save_figures.R).
+  [save_figures.R](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/main/save_figures.R).
 
 - [:file_folder:
-  R/](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/tree/master/R):
+  R/](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/tree/main/R):
   contains R functions.
 
 - [:page_facing_up:
-  \_targets.R](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/master/_targets.R):
+  \_targets.R](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/main/_targets.R):
   project pipeline.
 
 - [:page_facing_up:
-  save_figures.R](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/master/save_figures.R):
+  save_figures.R](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/main/save_figures.R):
   script to save figures.
 
 - [:page_facing_up:
-  \_targets_packages.R](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/master/_targets_packages.R):
+  \_targets_packages.R](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/main/_targets_packages.R):
   list of package dependencies created by `targets::tar_renv()` for
   compatibility with `renv`.
 
 - [:page_facing_up:
-  .Rprofile](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/master/.Rprofile):
+  .Rprofile](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/main/.Rprofile):
   script to activate `renv` that is automatically executed every time an
   R session starts.
 
 - [:page_facing_up:
-  renv.lock](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/master/renv.lock):
+  renv.lock](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/main/renv.lock):
   file that records the library used to run the project and makes it
   easier to reinstall it in the future and on different machines.
 
 - [:page_facing_up:
-  SIMMmultitroph_simulations.Rproj](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/master/SIMMmultitroph_simulations.Rproj):
+  SIMMmultitroph_simulations.Rproj](https://github.com/mattiaghilardi/SIMMmultitroph_simulations/blob/main/SIMMmultitroph_simulations.Rproj):
   project file used by RStudio to define and manage the R project. Can
   be used as a shortcut for opening the project directly from the
   filesystem.
