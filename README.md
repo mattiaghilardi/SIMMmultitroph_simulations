@@ -23,10 +23,12 @@ computing. It depends on R version 4.4.2 (2024-10-31), JAGS version
 4.3.2, which is used to fit Bayesian mixing models, and CmdStan version
 2.35.0, which is used to fit Bayesian regression models with `brms`.
 
-> \[!NOTE\] If JAGS is not installed on the machine, you can install it
+> [!NOTE] 
+> If JAGS is not installed on the machine, you can install it
 > from <https://mcmc-jags.sourceforge.io/>.
 
-> \[!CAUTION\] The project takes several hours to run using parallel
+> [!CAUTION] 
+> The project takes several hours to run using parallel
 > computing. It was run on a machine with 20 cores and a minimum of 12
 > cores are required.
 >
@@ -52,7 +54,8 @@ renv::restore()
 cmdstanr::cmdstan_version()
 ```
 
-> \[!NOTE\] If CmdStan is not installed on the machine, you can install
+> [!NOTE] 
+> If CmdStan is not installed on the machine, you can install
 > it by calling:
 >
 > ``` r
