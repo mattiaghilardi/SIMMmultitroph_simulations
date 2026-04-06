@@ -153,65 +153,6 @@ plot_baseline_effect <- function(performance_pk,
     patchwork::plot_annotation(tag_levels = "A")
 }
 
-#' #' Compute TP-corrected difference in \u03b4^15^N between consumer and baseline(s)
-#' #'
-#' #' @param sim_results Output of [run_simulations_baselines()] for a single simulation
-#' #'
-#' #' @return A value
-#' get_d15N_diff <- function(sim_results) {
-#'   
-#'   # isotope summary at source TP (TP = 1)
-#'   summary_tp1 <- sim_results$data$alpha_baselines |> 
-#'     bind_rows(sim_results$data$alpha_species |> 
-#'                 select(name = species, source, alpha)) |> 
-#'     left_join(sim_results$data$sources_summary, by = c("source" = "name")) |> 
-#'     mutate(d13C = alpha * d13C_mean, d15N = alpha * d15N_mean) |> 
-#'     group_by(name) |> 
-#'     summarise(d13C = sum(d13C),
-#'               d15N = sum(d15N)) |> 
-#'     ungroup()
-#'   
-#'   # get baselines proportions
-#'   # for two baselines
-#'   if (nrow(summary_tp1) == 3) {
-#'     # d13C averages at actual TP 
-#'     d13C <- sim_results$data$isotopes |> 
-#'       filter(type != "source") |> 
-#'       group_by(name) |> 
-#'       summarise(d13C = mean(d13C)) |> 
-#'       ungroup() |> 
-#'       pull(d13C)
-#'     
-#'     # proportion of baseline 1 with Carbon TDF = 0
-#'     # alpha <- (d13C[3] - d13C[2]) / (d13C[1] - d13C[2])
-#'     
-#'     # proportion of baseline 1 including Carbon TDF
-#'     mean_deltaC <- mean(sim_results$data$TDF$deltaC)
-#'     TPc <- sim_results$estimated_TP$mode
-#'     alpha <- (d13C[3] - d13C[2] - mean_deltaC * (TPc - 2)) / (d13C[1] - d13C[2])
-#'     # correct cases > 1 (i.e. d13C consumer < d13C baseline 1) and < 1 (i.e. d13C consumer > d13C baseline 2)
-#'     alpha <- ifelse(alpha > 1, 1, ifelse(alpha < 0, 0, alpha))
-#'     # add proportion of baseline 2
-#'     alpha <- c(alpha, 1 - alpha)
-#'   } else {
-#'     # for one baseline is 1
-#'     alpha <- 1
-#'   }
-#'   
-#'   # multiply baselines d15N at source TP by their proportions and sum
-#'   d15N_b <- sum(summary_tp1 |> filter(name != "species 1") |> pull(d15N) * alpha)
-#'   # get consumer d15N at source TP
-#'   d15N_c <- summary_tp1 |> filter(name == "species 1") |> pull(d15N)
-#'   # compute difference
-#'   dN <- d15N_c - d15N_b
-#'   # divide by D15N
-#'   mean_deltaN <- mean(sim_results$data$TDF$deltaN)
-#'   dN <- dN / mean_deltaN
-#'   
-#'   return(dN)
-#'   
-#' }
-
 #' Estimate TP error
 #'
 #' @param sim_results Output of [run_simulations_baselines()] for a single simulation
@@ -266,7 +207,7 @@ plot_TP_error_effect <- function(sim_baselines,
                                seed = seed) |> 
     mutate(n_baselines = factor(n_baselines,
                                 levels = c(1, 2),
-                                labels = c("1 baseline", "2 baselines")))
+                                labels = c("One baseline", "Two baselines")))
   
   # Plot effect
   p1 <- performance_pk |> 
@@ -278,7 +219,7 @@ plot_TP_error_effect <- function(sim_baselines,
     mutate(replicate = as.factor(replicate),
            n_baselines = factor(n_baselines,
                                 levels = c(1, 2),
-                                labels = c("1 baseline", "2 baselines"))) |> 
+                                labels = c("One baseline", "Two baselines"))) |> 
     ggplot(aes(x = abs_error_TP, y = max_abs_error)) + 
     ggdist::stat_lineribbon(data = preds,
                             aes(y = .epred, 
@@ -291,10 +232,11 @@ plot_TP_error_effect <- function(sim_baselines,
                                                                      to = "#2171b5")) +
     geom_point(alpha = alpha_points) + 
     facet_grid(~ n_baselines, scales = "free") +
-    labs(x = "Absolute error in TP",
+    labs(x = "Absolute error in TP<i><sub>c</sub></i>",
          y = "Max absolute error in <i>p<sub>k</sub></i>") +
     theme_bw() +
-    theme(axis.title.y = ggtext::element_markdown())
+    theme(axis.title.x = ggtext::element_markdown(),
+          axis.title.y = ggtext::element_markdown())
   
   # Get TP error
   tp_error <- purrr::map(
@@ -319,7 +261,7 @@ plot_TP_error_effect <- function(sim_baselines,
     left_join(tp_error) |> 
     mutate(n_baselines = factor(n_baselines,
                                 levels = c(1, 2),
-                                labels = c("1 baseline", "2 baselines"))) |> 
+                                labels = c("One baseline", "Two baselines"))) |> 
     ggplot(aes(x = estimated_tp_error, y = tp_error)) + 
     geom_abline() +
     geom_vline(xintercept = 0, linetype = "dashed") +
@@ -327,9 +269,10 @@ plot_TP_error_effect <- function(sim_baselines,
     geom_point(alpha = alpha_points) + 
     facet_grid(~ n_baselines, scales = "free") +
     labs(x = "TP-corrected &Delta;&delta;<sup>15</sup>N between consumer and baseline(s)",
-         y = "Error in TP") +
+         y = "Error in TP<i><sub>c</sub></i>") +
     theme_bw() +
-    theme(axis.title.x = ggtext::element_markdown())
+    theme(axis.title.x = ggtext::element_markdown(),
+          axis.title.y = ggtext::element_markdown())
   
   # Combine plots
   p1 / p2 +

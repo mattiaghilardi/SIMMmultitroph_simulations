@@ -11,7 +11,7 @@ The goal of this project is to reproduce all results and figures of the
 simulations in the paper
 
 > TITLE AND AUTHORS
-> <!-- > Title: Best practices for estimating consumer reliance on basal food sources with bulk stable isotopes -->
+> <!-- > Title: Best practices for the analytical estimation of consumer reliance on basal food sources using bulk stable isotopes -->
 > <!-- > -->
 > <!-- > Authors: Ghilardi M, Morais RA, Brandl SJ, Casey JM, Mercière A, Morat F, Schiettekatte NMD, Kayal M, Letourneur Y, Parravicini V -->
 
@@ -258,7 +258,7 @@ graph LR
     #>  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
     #> [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
     #> 
-    #> time zone: Atlantic/Canary
+    #> time zone: Europe/Paris
     #> tzcode source: system (glibc)
     #> 
     #> attached base packages:
