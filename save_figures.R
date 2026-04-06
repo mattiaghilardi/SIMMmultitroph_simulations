@@ -48,31 +48,45 @@ purrr::map(
         legend.direction = "vertical")
 ggsave("figures/example_food_web_baselines.png", width = 18, height = 16, units = "cm")
 
-# All 100 simulated source polygons
+# All 100 simulated food webs
 purrr::map(
   1:100,
-  function(i) 
-    ggplot(tar_read(sim_baselines)[[1]][[i]]$data$sources_summary, 
+  function(i) {
+    sources_summary <- tar_read(sim_baselines)[[1]][[i]]$data$sources_summary
+    consumer_summary <- tar_read(sim_baselines)[[1]][[i]]$data$isotopes |> 
+      filter(type == "higher consumer") |> 
+      summarise(d13C_mean = mean(d13C), 
+                d15N_mean = mean(d15N), 
+                d13C_sd = sd(d13C), 
+                d15N_sd = sd(d15N))
+    ggplot(sources_summary, 
            aes(x = d13C_mean, y = d15N_mean,
                xmin = d13C_mean - d13C_sd, xmax = d13C_mean + d13C_sd,
                ymin = d15N_mean - d15N_sd, ymax = d15N_mean + d15N_sd)) + 
-    geom_polygon(color = "black", fill = NA) +
-    geom_linerange(orientation = "x") + 
-    geom_linerange(orientation = "y") +
-    geom_point() +
-    xlim(-12, 12) + 
-    ylim(-12, 12) + 
-    theme_bw(base_size = 8) +
-    labs(x = "&delta;<sup>13</sup>C (&permil;)",
-         y = "&delta;<sup>15</sup>N (&permil;)",
-         title = i) +
-    theme(axis.title.x = ggtext::element_markdown(),
-          axis.title.y = ggtext::element_markdown(),
-          plot.title = element_text(hjust = 0.5, size = 6),
-          plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"))) |> 
+      geom_polygon(fill = "grey") +
+      geom_point(colour = "firebrick") + 
+      geom_linerange(orientation = "x", colour = "firebrick") + 
+      geom_linerange(orientation = "y", colour = "firebrick") +
+      geom_point(data = consumer_summary) +
+      geom_linerange(data = consumer_summary,
+                     orientation = "x") + 
+      geom_linerange(data = consumer_summary,
+                     orientation = "y") +
+      theme_bw(base_size = 8) +
+      labs(x = "&delta;<sup>13</sup>C (&permil;)",
+           y = "&delta;<sup>15</sup>N (&permil;)",
+           title = i) +
+      theme(axis.title.x = ggtext::element_markdown(),
+            axis.title.y = ggtext::element_markdown(), 
+            axis.text = element_blank(), 
+            axis.ticks = element_blank(),
+            plot.title = element_text(hjust = 0.5, size = 6),
+            plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"))
+  }
+) |> 
   patchwork::wrap_plots() + 
   patchwork::plot_layout(axes = "collect")
-ggsave("figures/100_polygons.png", width = 18, height = 18, units = "cm")
+ggsave("figures/100_food_webs.png", width = 18, height = 20, units = "cm")
 
 # Simulated food web
 tar_read(sim_food_web)$isospace_plot
