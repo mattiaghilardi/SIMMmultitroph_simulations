@@ -1,6 +1,47 @@
+# LICENSE -----------------------------------------------------------------
+# 
+# MIT License
+# 
+# Copyright (c) 2026 Mattia Ghilardi
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#   
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+# 
+# 
+# Required R packages -----------------------------------------------------
+# 
+# List of R packages required by this function:
+#   rlang, 
+#   dplyr, 
+#   purrr, 
+#   tidyr, 
+#   ggplot2, 
+#   ggtext, 
+#   compositions, 
+#   EnvStats
+# 
+# 
+# Functions ---------------------------------------------------------------
+
 #' Simulate consumer isotope data
 #' 
-#' Simulate isotope data for a consumer based on known source proportions and TP
+#' Simulate carbon and nitrogen stable isotope data for a consumer based on 
+#' known source proportions and trophic position
 #'
 #' @param n Number of observations to simulate
 #' @param sources A data frame of source isotope data with three columns:
@@ -27,7 +68,7 @@
 #'                       d13C_sd = runif(3, 0.5, 1.5),
 #'                       d15N_mean = rnorm(3, 0, 5),
 #'                       d15N_sd = runif(3, 0.5, 1.5))
-#' alpha <- brms::rdirichlet(1, c(1, 1, 1))
+#' alpha <- compositions::rDirichlet.acomp(1, c(1, 1, 1)) |> as.vector()
 #' # TDFs from Post 2002
 #' deltaC <- rnorm(59, 0.39, 1.69)
 #' deltaN <- rnorm(107, 3.4, 0.96)
@@ -44,8 +85,8 @@ simulate_consumer_data <- function(n, sources, alpha, C = 10, TP_mean, TP_sd = 0
   # j: a string, "d13C" or "d15N"
   get_tracers_values <- function(j) {
     # Consumer i draws Zik samples from source k, resulting in sample means Yijk for each tracer j
-    j_mean <- sources |> pull(paste(j, "mean", sep = "_"))
-    j_sd <- sources |> pull(paste(j, "sd", sep = "_"))
+    j_mean <- sources |> dplyr::pull(paste(j, "mean", sep = "_"))
+    j_sd <- sources |> dplyr::pull(paste(j, "sd", sep = "_"))
     Yijk <- purrr::map(
       .x = 1:dim(Zik)[2], 
       function(i) 
@@ -75,9 +116,9 @@ simulate_consumer_data <- function(n, sources, alpha, C = 10, TP_mean, TP_sd = 0
 
 #' Simulate a food web
 #' 
-#' Simulate isotope data for a food web including
-#' basal sources, baselines (i.e. primary consumers), 
-#' and consumers.
+#' Simulate carbon and nitrogen stable isotope data for a food web including
+#' basal sources (i.e. primary producers), baselines (i.e. primary consumers), 
+#' and higher-level consumers, organised into species and families.
 #'
 #' @param n_sources Number of sources to simulate. Default to 3
 #' @param source_C_range The range in source \u03b4^13^C. A numeric vector of length 2 (minimum and maximum).
@@ -113,8 +154,8 @@ simulate_consumer_data <- function(n, sources, alpha, C = 10, TP_mean, TP_sd = 0
 #' @param n_TDF_N Number of observations for nitrogen's trophic discrimination factor
 #' @param mean_TDF_N Mean for nitrogen's trophic discrimination factor
 #' @param sd_TDF_N Standard deviation for nitrogen's trophic discrimination factor
-#' @param C_baselines,C_consumers Total consumption rate of baselines and consumers
-#' (i.e. biomass taken from all sources in the tissue turnover period). Default to 20
+#' @param C_baselines,C_consumers Total consumption of baselines and consumers
+#' (i.e. total number of source items eaten in the tissue turnover period). Default to 20
 #' @param seed The seed passed to [base::set.seed()] to make simulations reproducible.
 #' If `NA` (the default), `set.seed` will not be called
 #'
@@ -162,7 +203,7 @@ simulate_food_web <- function(n_sources = 3,
                               C_consumers = 20,
                               seed = NA) {
   
-  # TO DO: implement checks for all arguments
+  # Initial checks
   if (!is.null(source_C_mean) & 
       (!is.numeric(source_C_mean) | 
        length(source_C_mean) != n_sources)) stop("`source_C_mean` must be NULL or a numeric vector of length `n_sources`")
@@ -170,7 +211,7 @@ simulate_food_web <- function(n_sources = 3,
       (!is.numeric(source_N_mean) | 
        length(source_N_mean) != n_sources)) stop("`source_N_mean` must be NULL or a numeric vector of length `n_sources`")
   if (!is.numeric(source_C_sd) | 
-       length(source_N_sd) != n_sources) stop("`source_C_sd` must be a numeric vector of length `n_sources`")
+      length(source_N_sd) != n_sources) stop("`source_C_sd` must be a numeric vector of length `n_sources`")
   if (!is.numeric(source_N_sd) | 
       length(source_C_sd) != n_sources) stop("`source_N_sd` must be a numeric vector of length `n_sources`")
   if (!is.integer(n_baselines) & !n_baselines %in% 1:2) stop("`n_baselines` must be an integer, either 1 or 2")
@@ -184,7 +225,7 @@ simulate_food_web <- function(n_sources = 3,
                                                           if all species have the same number of observations")
   
   if (!is.na(seed)) set.seed(seed)
-
+  
   # TDFs
   deltaC <- rnorm(n_TDF_C, mean_TDF_C, sd_TDF_C)
   deltaN <- rnorm(n_TDF_N, mean_TDF_N, sd_TDF_N)
@@ -215,7 +256,7 @@ simulate_food_web <- function(n_sources = 3,
                  d15N = rnorm(n_obs_sources[x], source_N_mean[x], source_N_sd[x]))
     }
   ) |> 
-    bind_rows()
+    dplyr::bind_rows()
   
   sources_summary <- data.frame(name = factor(source_names),
                                 d13C_mean = source_C_mean,
@@ -229,11 +270,12 @@ simulate_food_web <- function(n_sources = 3,
   
   if (n_baselines == 1) {
     # Assume a relatively even source contribution (equal relatively high shape parameter for all sources)
-    alpha_baselines <- brms::rdirichlet(1, rep(10, n_sources)) |> 
+    alpha_baselines <- compositions::rDirichlet.acomp(1, rep(10, n_sources)) |> 
+      matrix(ncol = n_sources) |> 
       as.data.frame() |> 
       rlang::set_names(source_names) |> 
-      mutate(name = factor("primary consumer 1"),
-             n_obs_baselines = n_obs_baselines) |> 
+      dplyr::mutate(name = factor("primary consumer 1"),
+                    n_obs_baselines = n_obs_baselines) |> 
       tidyr::pivot_longer(cols = starts_with("source"), 
                           names_to = "source", 
                           values_to = "alpha")
@@ -269,13 +311,14 @@ simulate_food_web <- function(n_sources = 3,
     alpha_baselines <- purrr::map(
       list(alpha_params_min, 
            alpha_params_max), 
-      ~ brms::rdirichlet(1, .x) |> 
+      ~ compositions::rDirichlet.acomp(1, .x) |> 
+        matrix(ncol = n_sources) |> 
         as.data.frame() |> 
         rlang::set_names(source_names)) |>
-      bind_rows() |> 
+      dplyr::bind_rows() |> 
       rescale_dirichlet(d = n_sources) |> 
-      mutate(name = factor(paste("primary consumer", 1:n_baselines)),
-             n_obs_baselines = n_obs_baselines) |> 
+      dplyr::mutate(name = factor(paste("primary consumer", 1:n_baselines)),
+                    n_obs_baselines = n_obs_baselines) |> 
       tidyr::pivot_longer(cols = starts_with("source"), 
                           names_to = "source", 
                           values_to = "alpha")
@@ -295,17 +338,18 @@ simulate_food_web <- function(n_sources = 3,
                                deltaN = deltaN, 
                                seed = NA) # seed already set upfront
     ) |> 
-    bind_rows(.id = "name") |> 
-    mutate(type = "baseline",
-           name = factor(name, levels = levels(alpha_baselines$name))) |> 
-    select(type, name, d13C, d15N)
+    dplyr::bind_rows(.id = "name") |> 
+    dplyr::mutate(type = "baseline",
+                  name = factor(name, levels = levels(alpha_baselines$name))) |> 
+    dplyr::select(type, name, d13C, d15N)
   
   # Higher consumers
   
   if (!is.na(seed)) set.seed(seed)
   
   # Global source proportions
-  alpha_global <- brms::rdirichlet(1, rep(1, n_sources)) |> 
+  alpha_global <- compositions::rDirichlet.acomp(1, rep(1, n_sources)) |> 
+    matrix(ncol = n_sources) |> 
     as.data.frame() |> 
     rlang::set_names(source_names)
   
@@ -327,13 +371,13 @@ simulate_food_web <- function(n_sources = 3,
       as.data.frame() |> 
       rescale_dirichlet(d = n_sources) |> 
       rlang::set_names(source_names) |> 
-      mutate(family = factor(paste("family", 1:n_families),
-                             levels = paste("family", 1:n_families)),
-             # randomly split the total number of species across families
-             n_species = rmultinom(n = 1, 
-                                   size = n_species, 
-                                   prob = rep.int(1 / 10, n_families)) |> 
-               as.vector())
+      dplyr::mutate(family = factor(paste("family", 1:n_families),
+                                    levels = paste("family", 1:n_families)),
+                    # randomly split the total number of species across families
+                    n_species = rmultinom(n = 1, 
+                                          size = n_species, 
+                                          prob = rep.int(1 / 10, n_families)) |> 
+                      as.vector())
     
     # While loop to avoid families with 0 species
     while(any(alpha_families$n_species == 0)) {
@@ -359,8 +403,8 @@ simulate_food_web <- function(n_sources = 3,
                             alpha = as.numeric(alpha_global))
   } else {
     family_n_species <- alpha_families |> 
-      select(family, n_species) |> 
-      distinct()
+      dplyr::select(family, n_species) |> 
+      dplyr::distinct()
     B_species <- data.frame(family = rep(family_n_species$family, 
                                          family_n_species$n_species),
                             B = rnorm(n_species, 0, sd_species))
@@ -369,25 +413,25 @@ simulate_food_web <- function(n_sources = 3,
       1:n_families, 
       function(i) {
         ilr_family_i <- alpha_families |> 
-          filter(family == paste("family", i)) |> 
-          pull(alpha) |> 
+          dplyr::filter(family == paste("family", i)) |> 
+          dplyr::pull(alpha) |> 
           compositions::ilr()
         B_species_family_i <- B_species |> 
-          filter(family == paste("family", i)) |> 
-          pull(B)
+          dplyr::filter(family == paste("family", i)) |> 
+          dplyr::pull(B)
         sapply(B_species_family_i, function(i) compositions::ilrInv(ilr_family_i + i)) |> 
           t() |> 
           as.data.frame() |> 
           rescale_dirichlet(d = n_sources) |> 
           rlang::set_names(source_names) |> 
-          mutate(family = paste("family", i))
+          dplyr::mutate(family = paste("family", i))
       }) |> 
-      bind_rows() |> 
-      mutate(family = factor(family, 
-                             levels = levels(alpha_families$family)),
-             species = factor(paste("species", 1:n_species),
-                              levels = paste("species", 1:n_species)),
-             n_obs_consumers = n_obs_consumers) |> 
+      dplyr::bind_rows() |> 
+      dplyr::mutate(family = factor(family, 
+                                    levels = levels(alpha_families$family)),
+                    species = factor(paste("species", 1:n_species),
+                                     levels = paste("species", 1:n_species)),
+                    n_obs_consumers = n_obs_consumers) |> 
       tidyr::pivot_longer(cols = starts_with("source"), 
                           names_to = "source", 
                           values_to = "alpha")
@@ -396,25 +440,25 @@ simulate_food_web <- function(n_sources = 3,
   # Trophic positions
   # Average TP of families
   TP_families <- alpha_families |> 
-    select(family, n_species) |> 
-    distinct() |> 
+    dplyr::select(family, n_species) |> 
+    dplyr::distinct() |> 
     # constrain lower and upper bound as family averages are unlikely to be at the extremes
-    mutate(TP_mean = runif(n = n_families, 2.5, 4.5),
-           TP_sd = runif(n = n_families, 0.1, 0.3))
+    dplyr::mutate(TP_mean = runif(n = n_families, 2.5, 4.5),
+                  TP_sd = runif(n = n_families, 0.1, 0.3))
   
   # Randomly sample around families averages
   TP_species <- alpha_species |> 
-    select(family, species) |> 
-    distinct() |> 
-    bind_cols(TP = TP_families |>
-                split(~family) |> 
-                # use truncated normal distribution to avoid species with TP < 2 or > 5
-                purrr::map(~ EnvStats::rnormTrunc(.x$n_species, .x$TP_mean, .x$TP_sd, min = 2, max = 5)) |> 
-                purrr::as_vector())
+    dplyr::select(family, species) |> 
+    dplyr::distinct() |> 
+    dplyr::bind_cols(TP = TP_families |>
+                       split(~family) |> 
+                       # use truncated normal distribution to avoid species with TP < 2 or > 5
+                       purrr::map(~ EnvStats::rnormTrunc(.x$n_species, .x$TP_mean, .x$TP_sd, min = 2, max = 5)) |> 
+                       purrr::as_vector())
   
   # Generate data for higher consumers
   higher_consumers <- alpha_species |> 
-    left_join(TP_species) |> 
+    dplyr::left_join(TP_species, by = c("family", "species")) |> 
     split(~species) |> 
     purrr::map(
       ~ simulate_consumer_data(unique(.x$n_obs_consumers), 
@@ -427,41 +471,41 @@ simulate_food_web <- function(n_sources = 3,
                                deltaN = deltaN, 
                                seed = NA) # seed already set upfront
     ) |> 
-    bind_rows(.id = "species") |> 
-    mutate(species = factor(species,
-                            levels = levels(alpha_species$species)))
+    dplyr::bind_rows(.id = "species") |> 
+    dplyr::mutate(species = factor(species,
+                                   levels = levels(alpha_species$species)))
   
   # Add family column to isotopes data
   higher_consumers <- alpha_species |> 
-    select(family, species) |> 
-    distinct()  |> 
-    mutate(type = "higher consumer", 
-           name = paste(family, species, sep = "_"),
-           name = factor(name, 
-                         levels = unique(name))) |> 
-    left_join(higher_consumers, by = "species")
+    dplyr::select(family, species) |> 
+    dplyr::distinct()  |> 
+    dplyr::mutate(type = "higher consumer", 
+                  name = paste(family, species, sep = "_"),
+                  name = factor(name, 
+                                levels = unique(name))) |> 
+    dplyr::left_join(higher_consumers, by = "species")
   
   # Plot
-  data <- bind_rows(sources,
-                    baselines, 
-                    higher_consumers)
+  data <- dplyr::bind_rows(sources,
+                           baselines, 
+                           higher_consumers)
   
   p <- data |> 
-    group_by(type, name) |> 
-    summarise(across(where(is.double), list(mean = mean, sd = sd))) |> 
-    ggplot(aes(x = d13C_mean, y = d15N_mean, shape = type, color = name)) +
-    geom_point(data = data, 
-               aes(x = d13C, y = d15N),
-               alpha = 0.5) +
-    geom_linerange(aes(xmin = d13C_mean - d13C_sd,
-                       xmax = d13C_mean + d13C_sd)) +
-    geom_pointrange(aes(ymin = d15N_mean - d15N_sd,
-                        ymax = d15N_mean + d15N_sd)) +
-    labs(x = "&delta;<sup>13</sup>C (&permil;)",
-         y = "&delta;<sup>15</sup>N (&permil;)") +
-    theme_bw() +
-    theme(axis.title.x = ggtext::element_markdown(),
-          axis.title.y = ggtext::element_markdown())
+    dplyr::group_by(type, name) |> 
+    dplyr::summarise(dplyr::across(where(is.double), list(mean = mean, sd = sd)), .groups = "drop") |> 
+    ggplot2::ggplot(ggplot2::aes(x = d13C_mean, y = d15N_mean, shape = type, color = name)) +
+    ggplot2::geom_point(data = data, 
+                        ggplot2::aes(x = d13C, y = d15N),
+                        alpha = 0.5) +
+    ggplot2::geom_linerange(ggplot2::aes(xmin = d13C_mean - d13C_sd,
+                                         xmax = d13C_mean + d13C_sd)) +
+    ggplot2::geom_pointrange(ggplot2::aes(ymin = d15N_mean - d15N_sd,
+                                          ymax = d15N_mean + d15N_sd)) +
+    ggplot2::labs(x = "&delta;<sup>13</sup>C (&permil;)",
+                  y = "&delta;<sup>15</sup>N (&permil;)") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(axis.title.x = ggtext::element_markdown(),
+                   axis.title.y = ggtext::element_markdown())
   
   return(list(isotopes = data,
               sources_summary = sources_summary,
