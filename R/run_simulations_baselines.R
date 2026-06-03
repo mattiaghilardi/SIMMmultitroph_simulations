@@ -105,7 +105,7 @@ run_simulations_baselines <- function(nrep = 100,
                                             discr = tdf, 
                                             model_filename = modelpath, 
                                             alpha.prior = 1,
-                                            seed = j)
+                                            jags.seed = j)
           
           # Set output options to avoid saving summary, diagnostics and plots
           mixsiar_options <- list(summary_save = FALSE,

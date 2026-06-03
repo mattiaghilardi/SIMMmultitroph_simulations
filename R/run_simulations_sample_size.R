@@ -118,7 +118,7 @@ run_simulations_consumer_sample_size <- function(sim_food_web,
                                             discr = tdf, 
                                             model_filename = modelpath, 
                                             alpha.prior = 1,
-                                            seed = j)
+                                            jags.seed = j)
           
           # Set output options to avoid saving summary, diagnostics and plots
           mixsiar_options <- list(summary_save = FALSE,
@@ -297,7 +297,7 @@ run_simulations_source_sample_size <- function(sim_food_web,
                                             discr = tdf, 
                                             model_filename = modelpath, 
                                             alpha.prior = 1,
-                                            seed = j)
+                                            jags.seed = j)
           
           # Set output options to avoid saving summary, diagnostics and plots
           mixsiar_options <- list(summary_save = FALSE,

@@ -24,7 +24,7 @@
 #' @param alpha.prior Dirichlet prior on p.global (default = 1, uninformative)
 #' @param resid_err include residual error in the model? (no longer used, read from `model_filename`)
 #' @param process_err include process error in the model? (no longer used, read from `model_filename`)
-#' @param seed Seed for reproducibility
+#' @param jags.seed Seed for reproducibility, default is 123, passed to \code{\link[R2jags]{jags.parallel}}
 #' @export
 #' @return jags.1, a \code{rjags} model object
 #' 
@@ -40,9 +40,9 @@
 #'
 run_model_parallel <- function(run, mix, source, discr, model_filename, 
                                alpha.prior = 1, resid_err=NULL, process_err=NULL,
-                               seed = NULL){
+                               jags.seed = 123){
   
-  if (!is.null(seed)) set.seed(seed)
+  if (!is.numeric(jags.seed) | length(jags.seed) != 1) stop("`jags.seed` must be a numeric value.")
   
   # get error structure from JAGS model text file line 8 
   err_raw <- read.table(model_filename, comment.char = '', sep=":", skip=7, nrows=1, colClasses="character")
@@ -271,7 +271,8 @@ run_model_parallel <- function(run, mix, source, discr, model_filename,
                                   n.thin = mcmc$thin,
                                   n.iter = mcmc$chainLength,
                                   DIC = mcmc$calcDIC,
-                                  n.cluster = mcmc$chains) # n.cluster = n.chains
+                                  n.cluster = mcmc$chains, # n.cluster = n.chains
+                                  jags.seed = jags.seed)
   
   return(jags.1)
 } # end run_model function
