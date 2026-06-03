@@ -5,6 +5,7 @@ library(patchwork)
 library(purrr)
 library(brms)
 library(withr)
+library(dplyr)
 
 # create figures folder
 if (!dir.exists("figures")) dir.create("figures")
@@ -28,7 +29,7 @@ ggsave("figures/sim_sample_size_consumer.png", width = 18, height = 18, units = 
 # Fig 4
 tar_read(plot_sample_size_source)
 ggsave("figures/sim_sample_size_source.png", width = 18, height = 18, units = "cm")
-# Warnings in fig 3 and 4 because we show the medians but not the intervals
+# We get warnings in figs 3 and 4 because we show the medians but not the intervals
 
 # Example food webs with one or two baselines
 purrr::map(
@@ -93,11 +94,13 @@ tar_read(sim_food_web)$isospace_plot
 ggsave("figures/simulated_food_web.png", width = 16, height = 10, units = "cm")
 
 # PP checks brms models
+set.seed(25) # seed to reproduce sampled draws
 # Baselines
 "model_baseline"|>
   tar_read_raw() |>
   brms::pp_check(ndraws = 100) +
-  xlab("Max absolute error")
+  xlab("Max absolute error in <i>p<sub>k</sub></i>") +
+  theme(axis.title.x = ggtext::element_markdown())
 ggsave("figures/pp_check_model_baselines.png", width = 12, height = 10, units = "cm")
 # Sample size
 purrr::map2(

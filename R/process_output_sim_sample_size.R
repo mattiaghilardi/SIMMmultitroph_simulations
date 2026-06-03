@@ -154,7 +154,8 @@ plot_sample_size_effect <- function(sim_food_web,
       theme_bw() +
       scale_fill_brewer(palette = "Dark2", guide = "none") +
       scale_x_continuous(n.breaks = 3) +
-      theme(strip.text = ggtext::element_markdown(face = "italic"))
+      theme(strip.text = ggtext::element_markdown(face = "italic"),
+            panel.spacing.x = unit(5, "mm"))
   }
   
   p1 <- plot_full_effect(model_median_sample_size, 
@@ -173,9 +174,9 @@ plot_sample_size_effect <- function(sim_food_web,
     theme(axis.title.y = ggtext::element_markdown())
   p4 <- plot_slopes(slopes_CI_sample_size)
   
-  (guide_area() /
+  (patchwork::guide_area() /
       (p1 + p3) / (p2 + p4)) +
-    plot_layout(guides = "collect",
+    patchwork::plot_layout(guides = "collect",
                 heights = c(1/10, 1, 3/4)) +
     patchwork::plot_annotation(tag_levels = "A") & 
     theme(legend.position = "top")
