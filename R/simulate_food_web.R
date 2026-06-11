@@ -51,8 +51,8 @@
 #' - `d15N_mean`: mean nitrogen stable isotope ratio
 #' - `d15N_sd`: standard deviation of nitrogen stable isotope ratio
 #' @param alpha A numeric vector of known source proportions
-#' @param C Total consumption rate (i.e. biomass that the consumer 
-#' takes from all sources in the tissue turnover period). Default to 10
+#' @param C Total consumption rate (i.e. total number of source items eaten
+#' by the consumer in the tissue turnover period). Default to 10
 #' @param TP_mean Mean trophic position
 #' @param TP_sd Standard deviation for trophic position. Default to 0.05
 #' @param deltaC A numeric vector. Trophic discrimination factor for C
