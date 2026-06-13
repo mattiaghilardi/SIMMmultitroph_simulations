@@ -37,16 +37,17 @@ purrr::map(
   ~ tar_read(sim_baselines)[[.x]][[1]][["data"]]$isospace_plot +
     labs(shape = "Sample type",
          color = paste0("Sample name (",
-                        .x, 
-                        ifelse(.x == 1, " baseline", " baselines"),
+                        ifelse(.x == 1, "One baseline", "Two baselines"),
                         ")")) +
-    ggtitle(paste(.x, ifelse(.x == 1, "baseline", "baselines"))) + 
+    ggtitle(ifelse(.x == 1, "One baseline", "Two baselines")) + 
     theme(plot.title = element_text(hjust = 0.5))
 ) |> 
   patchwork::wrap_plots() +
   patchwork::plot_layout(guides = "collect", axes = "collect") & 
   theme(legend.position = "bottom", 
-        legend.direction = "vertical")
+        legend.direction = "vertical") &
+  guides(color = guide_legend(order = 1),
+         shape = guide_legend(order = 2))
 ggsave("figures/example_food_web_baselines.png", width = 18, height = 16, units = "cm")
 
 # All 100 simulated food webs

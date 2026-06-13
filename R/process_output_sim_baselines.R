@@ -118,6 +118,9 @@ plot_baseline_effect <- function(performance_pk,
   
   # Plot effect
   p1 <- performance_pk |> 
+    mutate(n_baselines = factor(n_baselines,
+                                levels = c(1, 2),
+                                labels = c("One", "Two"))) |> 
     group_by(n_baselines, replicate) |> 
     summarise(max_abs_error = max(abs_error)) |>
     ungroup() |> 
@@ -144,7 +147,7 @@ plot_baseline_effect <- function(performance_pk,
                               normalize = "xy",
                               slab_alpha = 0.5) +
     facet_grid(~hyp, scales = "free") +
-    labs(x = "Contrast: 1 baseline - 2 baselines",
+    labs(x = "Contrast: one baseline - two baselines",
          y = "Normalised density") +
     theme_bw() +
     theme(strip.text.x = ggtext::element_markdown(face = "italic"))
