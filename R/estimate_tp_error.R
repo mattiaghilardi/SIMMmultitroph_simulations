@@ -28,11 +28,11 @@
 #' Estimate error in trophic position
 #'
 #' @param sources A data frame with mean isotopic values of sources. 
-#' Must have a column named "mean_d15N" and, if using two baselines,
-#' a column named "mean_d13C".
+#' Must have a column named "d15N_mean" and, if using two baselines,
+#' a column named "d13C_mean".
 #' @param baselines A data frame with mean isotopic values of one or two baselines. 
-#' Must have a column named "mean_d15N" and, if using two baselines,
-#' a column named "mean_d13C".
+#' Must have a column named "d15N_mean" and, if using two baselines,
+#' a column named "d13C_mean".
 #' @param TP_b A numeric value. Trophic position of baseline(s). 
 #' Default to 2 (i.e., primary consumers).
 #' @param TDF_N A numeric value. The TDF for $\delta^{15}N$.
