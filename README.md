@@ -11,7 +11,7 @@ The goal of this project is to reproduce all results and figures of the
 simulations in the paper
 
 > Title: Best analytical practices for estimating consumer reliance on
-> basal food sources with bulk stable isotopes
+> basal food sources using bulk stable isotopes
 >
 > Authors: Ghilardi M, Morais RA, Brandl SJ, Casey JM, Mercière A, Morat
 > F, Schiettekatte NMD, Kayal M, Letourneur Y, Parravicini V
