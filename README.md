@@ -34,7 +34,7 @@ computing. It depends on R version 4.4.2 (2024-10-31), JAGS version
 > cores are required.
 >
 > To test whether the project is running correctly, it is recommended to
-> modify `.targets.R` by reducing the number of simulations from 100 to
+> modify `_targets.R` by reducing the number of simulations from 100 to
 > 10 on line 26 (variable `nrep`) and the number of iterations of
 > Bayesian mixing models by replacing `run = "short"` with
 > `run = "test"` on lines 34, 61, and 82.
