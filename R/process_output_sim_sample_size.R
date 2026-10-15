@@ -199,21 +199,22 @@ plot_sample_size_effect <- function(sim_food_web,
 
 #' Proportions the estimates converge to in the sample-size simulations
 #'
-#' In each sample-size simulation one data set is a single fixed sample, so
-#' the estimated proportions converge to those implied by that sample rather
-#' than to the true proportions:
-#' - consumer sample size ([run_simulations_consumer_sample_size()]): sources
-#'   and baselines are fixed. Consumers are re-simulated from the population
-#'   source means, so they converge to the expected mixture, shifted by the TP
-#'   error from the observed baselines ([estimate_tp_error()]); the mixing model
-#'   uses the observed source sample.
-#' - source sample size ([run_simulations_source_sample_size()]): consumers and
-#'   baselines are fixed, so TP is estimated once. Sources are re-sampled around
-#'   the population means, so the limit is the rescaled mean of the fixed
-#'   consumers solved with the population source means.
+#' In each sample-size simulation only one data set is re-sampled while the
+#' other two are kept fixed, so as the sample size increases the estimated
+#' proportions converge to those implied by the fixed samples rather than to
+#' the true proportions:
+#' - consumer sample size ([run_simulations_consumer_sample_size()]): consumers
+#'   are re-sampled; sources and baselines are fixed. The limit combines the
+#'   expected consumer mixture (population source means), the TP error from the
+#'   observed baselines ([estimate_tp_error()]), and the observed source means.
+#' - source sample size ([run_simulations_source_sample_size()]): sources are
+#'   re-sampled; consumers and baselines are fixed. The limit combines the
+#'   observed consumer and baseline means, from which TP is solved once, and
+#'   the population source means.
 #'
-#' With three sources and two isotopes the mixing equations plus the
-#' sum-to-one constraint have a unique solution.
+#' Limits are obtained by solving the mixing equations for the mean isotope
+#' values, with TP obtained from the two-baseline equations. With three sources
+#' and two isotopes the solution is unique.
 #'
 #' @param sim_food_web Simulated food web with two baselines and one consumer species
 #'
