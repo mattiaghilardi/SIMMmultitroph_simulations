@@ -70,6 +70,10 @@ get_slopes <- function(model, seed = NULL) {
 #' @param xlab The title of the x axis
 #' @param .width The `.width` argument passed to [ggdist::point_interval()]
 #' @param alpha_points Point transparency
+#' @param limits Optional data frame with columns `source` and `alpha_limit`:
+#' the proportions the estimates converge to given the fixed samples (output of
+#' [get_sample_size_limits()] filtered to one simulation). Drawn as dotted lines.
+#' If NULL (default), not drawn
 #' @param seed Seed for reproducibility
 #'
 #' @return A `patchwork` object
@@ -82,6 +86,7 @@ plot_sample_size_effect <- function(sim_food_web,
                                     xlab = "Sample size",
                                     .width = ppoints(20),
                                     alpha_points = 0.1,
+                                    limits = NULL,
                                     seed = NULL) {
   
   plot_full_effect <- function(model, yvar, ylab) {
@@ -167,6 +172,16 @@ plot_sample_size_effect <- function(sim_food_web,
                linetype = "dashed", 
                show.legend = FALSE) +
     theme(axis.title.y = ggtext::element_markdown())
+  
+  # Expected limits given the fixed samples (dotted)
+  if (!is.null(limits)) {
+    p1 <- p1 +
+      geom_hline(data = limits |>
+                   mutate(source = gsub("source ", "", source)),
+                 aes(yintercept = alpha_limit, color = source),
+                 linetype = "dotted",
+                 show.legend = FALSE)
+  }
   p2 <- plot_slopes(slopes_median_sample_size)
   p3 <- plot_full_effect(model_CI_sample_size,
                          yvar = alpha_CI,
@@ -180,4 +195,84 @@ plot_sample_size_effect <- function(sim_food_web,
                 heights = c(1/10, 1, 3/4)) +
     patchwork::plot_annotation(tag_levels = "A") & 
     theme(legend.position = "top")
+}
+
+#' Proportions the estimates converge to in the sample-size simulations
+#'
+#' In each sample-size simulation one data set is a single fixed sample, so
+#' the estimated proportions converge to those implied by that sample rather
+#' than to the true proportions:
+#' - consumer sample size ([run_simulations_consumer_sample_size()]): sources
+#'   and baselines are fixed. Consumers are re-simulated from the population
+#'   source means, so they converge to the expected mixture, shifted by the TP
+#'   error from the observed baselines ([estimate_tp_error()]); the mixing model
+#'   uses the observed source sample.
+#' - source sample size ([run_simulations_source_sample_size()]): consumers and
+#'   baselines are fixed, so TP is estimated once. Sources are re-sampled around
+#'   the population means, so the limit is the rescaled mean of the fixed
+#'   consumers solved with the population source means.
+#'
+#' With three sources and two isotopes the mixing equations plus the
+#' sum-to-one constraint have a unique solution.
+#'
+#' @param sim_food_web Simulated food web with two baselines and one consumer species
+#'
+#' @return A tibble with columns `simulation` ("consumer" or "source"),
+#' `source`, `alpha_true`, `alpha_limit`, plus the TP error or TP estimate used
+get_sample_size_limits <- function(sim_food_web) {
+  
+  src_pop <- sim_food_web$sources_summary
+  TDF_C <- mean(sim_food_web$TDF$deltaC)
+  TDF_N <- mean(sim_food_web$TDF$deltaN)
+  TDF <- c(TDF_C, TDF_N)
+  p_true <- sim_food_web$alpha_species$alpha
+  source_names <- as.character(src_pop$name)
+  
+  # Observed means of the fixed samples (ordered as factor levels)
+  obs_means <- function(type_) {
+    sim_food_web$isotopes |> 
+      dplyr::filter(type == type_) |> 
+      dplyr::group_by(name) |> 
+      dplyr::summarise(d13C_mean = mean(d13C), 
+                       d15N_mean = mean(d15N), 
+                       .groups = "drop") |> 
+      dplyr::arrange(name)
+  }
+  src_obs <- obs_means("source")
+  base_obs <- obs_means("baseline")
+  cons_obs <- obs_means("higher consumer")
+  
+  S_pop <- rbind(src_pop$d13C_mean, src_pop$d15N_mean, 1)
+  S_obs <- rbind(src_obs$d13C_mean, src_obs$d15N_mean, 1)
+  
+  # Consumer sample-size simulation
+  tp_err <- estimate_tp_error(src_pop, base_obs, TP_b = 2, TDF_N, TDF_C, p_true)
+  mix_true <- c(sum(p_true * src_pop$d13C_mean), sum(p_true * src_pop$d15N_mean))
+  lim_consumer <- solve(S_obs, c(mix_true - TDF * tp_err, 1))
+  
+  # Source sample-size simulation: TP estimated once from fixed consumers and baselines
+  # Two-baseline equations with observed means (baselines at TP = 2):
+  # d13C_c - d13C_b2 = TDF_C (TP - 2) + a (d13C_b1 - d13C_b2), same for d15N
+  x <- cons_obs$d13C_mean - base_obs$d13C_mean[2]
+  y <- cons_obs$d15N_mean - base_obs$d15N_mean[2]
+  dC_b <- base_obs$d13C_mean[1] - base_obs$d13C_mean[2]
+  dN_b <- base_obs$d15N_mean[1] - base_obs$d15N_mean[2]
+  r <- TDF_C / TDF_N
+  a <- min(max((x - r * y) / (dC_b - r * dN_b), 0), 1)
+  TP <- 2 + (y - a * dN_b) / TDF_N
+  cons_rescaled <- c(cons_obs$d13C_mean, cons_obs$d15N_mean) - TDF * (TP - 1)
+  lim_source <- solve(S_pop, c(cons_rescaled, 1))
+  
+  dplyr::bind_rows(
+    tibble::tibble(simulation = "consumer",
+                   source = source_names,
+                   alpha_true = p_true,
+                   alpha_limit = lim_consumer,
+                   TP_error = tp_err),
+    tibble::tibble(simulation = "source",
+                   source = source_names,
+                   alpha_true = p_true,
+                   alpha_limit = lim_source,
+                   TP_estimate = TP)
+  )
 }

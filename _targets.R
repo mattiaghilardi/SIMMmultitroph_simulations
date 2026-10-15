@@ -54,6 +54,7 @@ list(
                                              n_species = 1,
                                              C_baselines = 20,
                                              C_consumers = 40)),
+  tar_target(limits_sample_size, get_sample_size_limits(sim_food_web)),
   tar_target(sim_sample_size_consumer, run_simulations_consumer_sample_size(sim_food_web,
                                                                             sample_size = c(1, 3, 5, 10, 20), 
                                                                             nrep = nrep, 
@@ -73,7 +74,9 @@ list(
                                                                 slopes_CI_sample_size_consumer,
                                                                 xlab = "Consumer sample size",
                                                                 .width = ppoints(50),
-                                                                alpha_points = 0.2)),
+                                                                alpha_points = 0.2,
+                                                                limits = dplyr::filter(limits_sample_size, 
+                                                                                       simulation == "consumer"))),
   
   # Simulations with different sources sample sizes
   tar_target(sim_sample_size_source, run_simulations_source_sample_size(sim_food_web,
@@ -94,6 +97,8 @@ list(
                                                               slopes_CI_sample_size_source,
                                                               xlab = "Source sample size",
                                                               .width = ppoints(50),
-                                                              alpha_points = 0.2))
+                                                              alpha_points = 0.2,
+                                                              limits = dplyr::filter(limits_sample_size, 
+                                                                                     simulation == "source")))
 )
 # ~13 hours

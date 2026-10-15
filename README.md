@@ -162,13 +162,14 @@ graph LR
   end
   subgraph Graph
     direction LR
+    x21ac55773aa00ff7>"estimate_tp_error"]:::uptodate --> x4f64251e341dc26d>"get_sample_size_limits"]:::uptodate
+    x21ac55773aa00ff7>"estimate_tp_error"]:::uptodate --> x89aa6a1b0bb00997>"get_tp_error"]:::uptodate
     xf48d3b6327a7cf5e>"run_model_parallel"]:::uptodate --> x28f1d3113c9459b8>"run_simulations_baselines"]:::uptodate
     xf48d3b6327a7cf5e>"run_model_parallel"]:::uptodate --> x47a8a2aae50632f3>"run_simulations_source_sample_size"]:::uptodate
     xf48d3b6327a7cf5e>"run_model_parallel"]:::uptodate --> x6db4d56f639e323d>"run_simulations_consumer_sample_size"]:::uptodate
     x591bcbf82eb648c3>"simulate_food_web"]:::uptodate --> x28f1d3113c9459b8>"run_simulations_baselines"]:::uptodate
     xc69bd914436bb0ef>"simulate_consumer_data"]:::uptodate --> x591bcbf82eb648c3>"simulate_food_web"]:::uptodate
     xc69bd914436bb0ef>"simulate_consumer_data"]:::uptodate --> x6db4d56f639e323d>"run_simulations_consumer_sample_size"]:::uptodate
-    x21ac55773aa00ff7>"estimate_tp_error"]:::uptodate --> x89aa6a1b0bb00997>"get_tp_error"]:::uptodate
     x6d92743533cfd8a6>"rescale_dirichlet"]:::uptodate --> x591bcbf82eb648c3>"simulate_food_web"]:::uptodate
     x89aa6a1b0bb00997>"get_tp_error"]:::uptodate --> xc786b5ea9d63b9c5>"plot_TP_error_effect"]:::uptodate
     x947713c23b367de6>"get_baseline_contrasts"]:::uptodate --> x7c75abec967e9944(["baseline_contrasts"]):::uptodate
@@ -178,6 +179,7 @@ graph LR
     xb36606d044598292{{"nrep"}}:::uptodate --> xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate
     x47a8a2aae50632f3>"run_simulations_source_sample_size"]:::uptodate --> xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate
     xedfdc913389bf9d2(["sim_food_web"]):::uptodate --> xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate
+    x19b486c6d52115c7(["limits_sample_size"]):::uptodate --> x1606860f46586235(["plot_sample_size_source"]):::uptodate
     xe296b01090e4e986(["model_CI_sample_size_source"]):::uptodate --> x1606860f46586235(["plot_sample_size_source"]):::uptodate
     x94cc20dcbe89a450(["model_median_sample_size_source"]):::uptodate --> x1606860f46586235(["plot_sample_size_source"]):::uptodate
     x078b6b9033d458ed>"plot_sample_size_effect"]:::uptodate --> x1606860f46586235(["plot_sample_size_source"]):::uptodate
@@ -219,9 +221,12 @@ graph LR
     xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate --> x94cc20dcbe89a450(["model_median_sample_size_source"]):::uptodate
     x692c828a4b14e9e4>"get_slopes"]:::uptodate --> x739b3428d6a79fd4(["slopes_CI_sample_size_source"]):::uptodate
     xe296b01090e4e986(["model_CI_sample_size_source"]):::uptodate --> x739b3428d6a79fd4(["slopes_CI_sample_size_source"]):::uptodate
+    x4f64251e341dc26d>"get_sample_size_limits"]:::uptodate --> x19b486c6d52115c7(["limits_sample_size"]):::uptodate
+    xedfdc913389bf9d2(["sim_food_web"]):::uptodate --> x19b486c6d52115c7(["limits_sample_size"]):::uptodate
     x591bcbf82eb648c3>"simulate_food_web"]:::uptodate --> xedfdc913389bf9d2(["sim_food_web"]):::uptodate
     xb36606d044598292{{"nrep"}}:::uptodate --> x5731469b81dfc1b5(["sim_baselines"]):::uptodate
     x28f1d3113c9459b8>"run_simulations_baselines"]:::uptodate --> x5731469b81dfc1b5(["sim_baselines"]):::uptodate
+    x19b486c6d52115c7(["limits_sample_size"]):::uptodate --> x1fc30f50d0051e95(["plot_sample_size_consumer"]):::uptodate
     x624dfa16887e8437(["model_CI_sample_size_consumer"]):::uptodate --> x1fc30f50d0051e95(["plot_sample_size_consumer"]):::uptodate
     x43d5dd88718ec163(["model_median_sample_size_consumer"]):::uptodate --> x1fc30f50d0051e95(["plot_sample_size_consumer"]):::uptodate
     x078b6b9033d458ed>"plot_sample_size_effect"]:::uptodate --> x1fc30f50d0051e95(["plot_sample_size_consumer"]):::uptodate
@@ -238,7 +243,7 @@ graph LR
   linkStyle 0 stroke-width:0px;
   linkStyle 1 stroke-width:0px;
   linkStyle 2 stroke-width:0px;
-  linkStyle 72 stroke-width:0px;
+  linkStyle 77 stroke-width:0px;
 ```
 
 ## Computational environment
