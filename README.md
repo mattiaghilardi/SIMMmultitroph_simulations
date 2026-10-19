@@ -162,23 +162,66 @@ graph LR
   end
   subgraph Graph
     direction LR
-    x21ac55773aa00ff7>"estimate_tp_error"]:::uptodate --> x4f64251e341dc26d>"get_sample_size_limits"]:::uptodate
-    x21ac55773aa00ff7>"estimate_tp_error"]:::uptodate --> x89aa6a1b0bb00997>"get_tp_error"]:::uptodate
+    xe0ed197bf001369a>"join_tp_error"]:::uptodate --> x01fa55b6ef0f102c>"fit_coverage_tp_error"]:::uptodate
+    xe0ed197bf001369a>"join_tp_error"]:::uptodate --> xc786b5ea9d63b9c5>"plot_TP_error_effect"]:::uptodate
+    xe0ed197bf001369a>"join_tp_error"]:::uptodate --> xcca3bd5f21516fa7>"get_max_abs_error"]:::uptodate
+    xe0ed197bf001369a>"join_tp_error"]:::uptodate --> xd3828f3b280f2068>"get_coverage_tp_error"]:::uptodate
+    x6d92743533cfd8a6>"rescale_dirichlet"]:::uptodate --> x591bcbf82eb648c3>"simulate_food_web"]:::uptodate
     xf48d3b6327a7cf5e>"run_model_parallel"]:::uptodate --> x28f1d3113c9459b8>"run_simulations_baselines"]:::uptodate
     xf48d3b6327a7cf5e>"run_model_parallel"]:::uptodate --> x47a8a2aae50632f3>"run_simulations_source_sample_size"]:::uptodate
     xf48d3b6327a7cf5e>"run_model_parallel"]:::uptodate --> x6db4d56f639e323d>"run_simulations_consumer_sample_size"]:::uptodate
+    x21ac55773aa00ff7>"estimate_tp_error"]:::uptodate --> x89aa6a1b0bb00997>"get_tp_error"]:::uptodate
+    x21ac55773aa00ff7>"estimate_tp_error"]:::uptodate --> x4f64251e341dc26d>"get_sample_size_limits"]:::uptodate
+    xcca3bd5f21516fa7>"get_max_abs_error"]:::uptodate --> x5a1e27704096b922>"fit_baseline_effect"]:::uptodate
+    x89aa6a1b0bb00997>"get_tp_error"]:::uptodate --> xc4fa7c7103be3eaa>"plot_TP_error_analytic"]:::uptodate
     x591bcbf82eb648c3>"simulate_food_web"]:::uptodate --> x28f1d3113c9459b8>"run_simulations_baselines"]:::uptodate
     xc69bd914436bb0ef>"simulate_consumer_data"]:::uptodate --> x591bcbf82eb648c3>"simulate_food_web"]:::uptodate
     xc69bd914436bb0ef>"simulate_consumer_data"]:::uptodate --> x6db4d56f639e323d>"run_simulations_consumer_sample_size"]:::uptodate
-    x6d92743533cfd8a6>"rescale_dirichlet"]:::uptodate --> x591bcbf82eb648c3>"simulate_food_web"]:::uptodate
-    x89aa6a1b0bb00997>"get_tp_error"]:::uptodate --> xc786b5ea9d63b9c5>"plot_TP_error_effect"]:::uptodate
     x947713c23b367de6>"get_baseline_contrasts"]:::uptodate --> x7c75abec967e9944(["baseline_contrasts"]):::uptodate
     x8effdbfc4054a8b1(["model_baseline"]):::uptodate --> x7c75abec967e9944(["baseline_contrasts"]):::uptodate
+    x9553010ed3b86cc8(["model_coverage_tp_error"]):::uptodate --> x7c75abec967e9944(["baseline_contrasts"]):::uptodate
+    xe05234093d4959a3(["coverage_tp_error"]):::uptodate --> xb915cef9f481fc1f(["plot_pk_vs_tp"]):::uptodate
+    x8effdbfc4054a8b1(["model_baseline"]):::uptodate --> xb915cef9f481fc1f(["plot_pk_vs_tp"]):::uptodate
+    x9553010ed3b86cc8(["model_coverage_tp_error"]):::uptodate --> xb915cef9f481fc1f(["plot_pk_vs_tp"]):::uptodate
+    x6721637a114517cc(["performance_pk"]):::uptodate --> xb915cef9f481fc1f(["plot_pk_vs_tp"]):::uptodate
+    xddd15c1e29dd0db2(["performance_TP"]):::uptodate --> xb915cef9f481fc1f(["plot_pk_vs_tp"]):::uptodate
+    xc786b5ea9d63b9c5>"plot_TP_error_effect"]:::uptodate --> xb915cef9f481fc1f(["plot_pk_vs_tp"]):::uptodate
+    x4f64251e341dc26d>"get_sample_size_limits"]:::uptodate --> x19b486c6d52115c7(["limits_sample_size"]):::uptodate
+    xedfdc913389bf9d2(["sim_food_web"]):::uptodate --> x19b486c6d52115c7(["limits_sample_size"]):::uptodate
+    x337dfe47aaaeaa92>"get_performance_TP"]:::uptodate --> xddd15c1e29dd0db2(["performance_TP"]):::uptodate
+    xb36606d044598292{{"nrep"}}:::uptodate --> xddd15c1e29dd0db2(["performance_TP"]):::uptodate
+    x5731469b81dfc1b5(["sim_baselines"]):::uptodate --> xddd15c1e29dd0db2(["performance_TP"]):::uptodate
+    xddd15c1e29dd0db2(["performance_TP"]):::uptodate --> xfd9dd4de6a7a40a1(["plot_tp_error_analytic"]):::uptodate
+    xc4fa7c7103be3eaa>"plot_TP_error_analytic"]:::uptodate --> xfd9dd4de6a7a40a1(["plot_tp_error_analytic"]):::uptodate
+    x5731469b81dfc1b5(["sim_baselines"]):::uptodate --> xfd9dd4de6a7a40a1(["plot_tp_error_analytic"]):::uptodate
     x692c828a4b14e9e4>"get_slopes"]:::uptodate --> x407f420266f7cba3(["slopes_median_sample_size_consumer"]):::uptodate
     x43d5dd88718ec163(["model_median_sample_size_consumer"]):::uptodate --> x407f420266f7cba3(["slopes_median_sample_size_consumer"]):::uptodate
-    xb36606d044598292{{"nrep"}}:::uptodate --> xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate
-    x47a8a2aae50632f3>"run_simulations_source_sample_size"]:::uptodate --> xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate
-    xedfdc913389bf9d2(["sim_food_web"]):::uptodate --> xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate
+    x5a1e27704096b922>"fit_baseline_effect"]:::uptodate --> x8effdbfc4054a8b1(["model_baseline"]):::uptodate
+    x6721637a114517cc(["performance_pk"]):::uptodate --> x8effdbfc4054a8b1(["model_baseline"]):::uptodate
+    xddd15c1e29dd0db2(["performance_TP"]):::uptodate --> x8effdbfc4054a8b1(["model_baseline"]):::uptodate
+    xc62dfd17067dfe06>"get_baseline_slopes"]:::uptodate --> x08ebd82a9e830f20(["baseline_slopes"]):::uptodate
+    x8effdbfc4054a8b1(["model_baseline"]):::uptodate --> x08ebd82a9e830f20(["baseline_slopes"]):::uptodate
+    x9553010ed3b86cc8(["model_coverage_tp_error"]):::uptodate --> x08ebd82a9e830f20(["baseline_slopes"]):::uptodate
+    xb36606d044598292{{"nrep"}}:::uptodate --> x9ebeb9a32f4fbe45(["sim_sample_size_consumer"]):::uptodate
+    x6db4d56f639e323d>"run_simulations_consumer_sample_size"]:::uptodate --> x9ebeb9a32f4fbe45(["sim_sample_size_consumer"]):::uptodate
+    xedfdc913389bf9d2(["sim_food_web"]):::uptodate --> x9ebeb9a32f4fbe45(["sim_sample_size_consumer"]):::uptodate
+    x692c828a4b14e9e4>"get_slopes"]:::uptodate --> xad49654a44770e0a(["slopes_CI_sample_size_consumer"]):::uptodate
+    x624dfa16887e8437(["model_CI_sample_size_consumer"]):::uptodate --> xad49654a44770e0a(["slopes_CI_sample_size_consumer"]):::uptodate
+    xd3828f3b280f2068>"get_coverage_tp_error"]:::uptodate --> xe05234093d4959a3(["coverage_tp_error"]):::uptodate
+    x6721637a114517cc(["performance_pk"]):::uptodate --> xe05234093d4959a3(["coverage_tp_error"]):::uptodate
+    xddd15c1e29dd0db2(["performance_TP"]):::uptodate --> xe05234093d4959a3(["coverage_tp_error"]):::uptodate
+    x3523f25b730a048c(["baseline_contrast_curves"]):::uptodate --> x8966ac46f9a49bd8(["plot_contrasts_baselines"]):::uptodate
+    x7c75abec967e9944(["baseline_contrasts"]):::uptodate --> x8966ac46f9a49bd8(["plot_contrasts_baselines"]):::uptodate
+    x4e25c1b9e6cf230e>"plot_baseline_contrasts"]:::uptodate --> x8966ac46f9a49bd8(["plot_contrasts_baselines"]):::uptodate
+    xd40414fd87cf9ff3>"fit_sample_size_effect"]:::uptodate --> x94cc20dcbe89a450(["model_median_sample_size_source"]):::uptodate
+    xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate --> x94cc20dcbe89a450(["model_median_sample_size_source"]):::uptodate
+    x01fa55b6ef0f102c>"fit_coverage_tp_error"]:::uptodate --> x9553010ed3b86cc8(["model_coverage_tp_error"]):::uptodate
+    x6721637a114517cc(["performance_pk"]):::uptodate --> x9553010ed3b86cc8(["model_coverage_tp_error"]):::uptodate
+    xddd15c1e29dd0db2(["performance_TP"]):::uptodate --> x9553010ed3b86cc8(["model_coverage_tp_error"]):::uptodate
+    x315ea71d799dc9ae>"get_baseline_contrast_curves"]:::uptodate --> x3523f25b730a048c(["baseline_contrast_curves"]):::uptodate
+    x8effdbfc4054a8b1(["model_baseline"]):::uptodate --> x3523f25b730a048c(["baseline_contrast_curves"]):::uptodate
+    x9553010ed3b86cc8(["model_coverage_tp_error"]):::uptodate --> x3523f25b730a048c(["baseline_contrast_curves"]):::uptodate
+    xddd15c1e29dd0db2(["performance_TP"]):::uptodate --> x3523f25b730a048c(["baseline_contrast_curves"]):::uptodate
     x19b486c6d52115c7(["limits_sample_size"]):::uptodate --> x1606860f46586235(["plot_sample_size_source"]):::uptodate
     xe296b01090e4e986(["model_CI_sample_size_source"]):::uptodate --> x1606860f46586235(["plot_sample_size_source"]):::uptodate
     x94cc20dcbe89a450(["model_median_sample_size_source"]):::uptodate --> x1606860f46586235(["plot_sample_size_source"]):::uptodate
@@ -187,45 +230,17 @@ graph LR
     xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate --> x1606860f46586235(["plot_sample_size_source"]):::uptodate
     x739b3428d6a79fd4(["slopes_CI_sample_size_source"]):::uptodate --> x1606860f46586235(["plot_sample_size_source"]):::uptodate
     xdc6d71eefa059099(["slopes_median_sample_size_source"]):::uptodate --> x1606860f46586235(["plot_sample_size_source"]):::uptodate
-    x692c828a4b14e9e4>"get_slopes"]:::uptodate --> xad49654a44770e0a(["slopes_CI_sample_size_consumer"]):::uptodate
-    x624dfa16887e8437(["model_CI_sample_size_consumer"]):::uptodate --> xad49654a44770e0a(["slopes_CI_sample_size_consumer"]):::uptodate
-    xd40414fd87cf9ff3>"fit_sample_size_effect"]:::uptodate --> x624dfa16887e8437(["model_CI_sample_size_consumer"]):::uptodate
-    x9ebeb9a32f4fbe45(["sim_sample_size_consumer"]):::uptodate --> x624dfa16887e8437(["model_CI_sample_size_consumer"]):::uptodate
-    xb36606d044598292{{"nrep"}}:::uptodate --> x9ebeb9a32f4fbe45(["sim_sample_size_consumer"]):::uptodate
-    x6db4d56f639e323d>"run_simulations_consumer_sample_size"]:::uptodate --> x9ebeb9a32f4fbe45(["sim_sample_size_consumer"]):::uptodate
-    xedfdc913389bf9d2(["sim_food_web"]):::uptodate --> x9ebeb9a32f4fbe45(["sim_sample_size_consumer"]):::uptodate
     x692c828a4b14e9e4>"get_slopes"]:::uptodate --> xdc6d71eefa059099(["slopes_median_sample_size_source"]):::uptodate
     x94cc20dcbe89a450(["model_median_sample_size_source"]):::uptodate --> xdc6d71eefa059099(["slopes_median_sample_size_source"]):::uptodate
-    x5a1e27704096b922>"fit_baseline_effect"]:::uptodate --> x8effdbfc4054a8b1(["model_baseline"]):::uptodate
-    x6721637a114517cc(["performance_pk"]):::uptodate --> x8effdbfc4054a8b1(["model_baseline"]):::uptodate
-    xddd15c1e29dd0db2(["performance_TP"]):::uptodate --> x8effdbfc4054a8b1(["model_baseline"]):::uptodate
     xd40414fd87cf9ff3>"fit_sample_size_effect"]:::uptodate --> xe296b01090e4e986(["model_CI_sample_size_source"]):::uptodate
     xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate --> xe296b01090e4e986(["model_CI_sample_size_source"]):::uptodate
-    x337dfe47aaaeaa92>"get_performance_TP"]:::uptodate --> xddd15c1e29dd0db2(["performance_TP"]):::uptodate
-    xb36606d044598292{{"nrep"}}:::uptodate --> xddd15c1e29dd0db2(["performance_TP"]):::uptodate
-    x5731469b81dfc1b5(["sim_baselines"]):::uptodate --> xddd15c1e29dd0db2(["performance_TP"]):::uptodate
-    x7c75abec967e9944(["baseline_contrasts"]):::uptodate --> x896d952401a6da81(["plot_baseline"]):::uptodate
-    x8effdbfc4054a8b1(["model_baseline"]):::uptodate --> x896d952401a6da81(["plot_baseline"]):::uptodate
-    x6721637a114517cc(["performance_pk"]):::uptodate --> x896d952401a6da81(["plot_baseline"]):::uptodate
-    xddd15c1e29dd0db2(["performance_TP"]):::uptodate --> x896d952401a6da81(["plot_baseline"]):::uptodate
-    x1cf86ed3003212ac>"plot_baseline_effect"]:::uptodate --> x896d952401a6da81(["plot_baseline"]):::uptodate
-    x38ddd0f39dee6000>"get_performance_pk"]:::uptodate --> x6721637a114517cc(["performance_pk"]):::uptodate
-    xb36606d044598292{{"nrep"}}:::uptodate --> x6721637a114517cc(["performance_pk"]):::uptodate
-    x5731469b81dfc1b5(["sim_baselines"]):::uptodate --> x6721637a114517cc(["performance_pk"]):::uptodate
-    x8effdbfc4054a8b1(["model_baseline"]):::uptodate --> xb915cef9f481fc1f(["plot_pk_vs_tp"]):::uptodate
-    x6721637a114517cc(["performance_pk"]):::uptodate --> xb915cef9f481fc1f(["plot_pk_vs_tp"]):::uptodate
-    xddd15c1e29dd0db2(["performance_TP"]):::uptodate --> xb915cef9f481fc1f(["plot_pk_vs_tp"]):::uptodate
-    xc786b5ea9d63b9c5>"plot_TP_error_effect"]:::uptodate --> xb915cef9f481fc1f(["plot_pk_vs_tp"]):::uptodate
-    x5731469b81dfc1b5(["sim_baselines"]):::uptodate --> xb915cef9f481fc1f(["plot_pk_vs_tp"]):::uptodate
-    xd40414fd87cf9ff3>"fit_sample_size_effect"]:::uptodate --> x94cc20dcbe89a450(["model_median_sample_size_source"]):::uptodate
-    xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate --> x94cc20dcbe89a450(["model_median_sample_size_source"]):::uptodate
+    xb36606d044598292{{"nrep"}}:::uptodate --> xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate
+    x47a8a2aae50632f3>"run_simulations_source_sample_size"]:::uptodate --> xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate
+    xedfdc913389bf9d2(["sim_food_web"]):::uptodate --> xeed5bb8f0b7988df(["sim_sample_size_source"]):::uptodate
+    xd40414fd87cf9ff3>"fit_sample_size_effect"]:::uptodate --> x624dfa16887e8437(["model_CI_sample_size_consumer"]):::uptodate
+    x9ebeb9a32f4fbe45(["sim_sample_size_consumer"]):::uptodate --> x624dfa16887e8437(["model_CI_sample_size_consumer"]):::uptodate
     x692c828a4b14e9e4>"get_slopes"]:::uptodate --> x739b3428d6a79fd4(["slopes_CI_sample_size_source"]):::uptodate
     xe296b01090e4e986(["model_CI_sample_size_source"]):::uptodate --> x739b3428d6a79fd4(["slopes_CI_sample_size_source"]):::uptodate
-    x4f64251e341dc26d>"get_sample_size_limits"]:::uptodate --> x19b486c6d52115c7(["limits_sample_size"]):::uptodate
-    xedfdc913389bf9d2(["sim_food_web"]):::uptodate --> x19b486c6d52115c7(["limits_sample_size"]):::uptodate
-    x591bcbf82eb648c3>"simulate_food_web"]:::uptodate --> xedfdc913389bf9d2(["sim_food_web"]):::uptodate
-    xb36606d044598292{{"nrep"}}:::uptodate --> x5731469b81dfc1b5(["sim_baselines"]):::uptodate
-    x28f1d3113c9459b8>"run_simulations_baselines"]:::uptodate --> x5731469b81dfc1b5(["sim_baselines"]):::uptodate
     x19b486c6d52115c7(["limits_sample_size"]):::uptodate --> x1fc30f50d0051e95(["plot_sample_size_consumer"]):::uptodate
     x624dfa16887e8437(["model_CI_sample_size_consumer"]):::uptodate --> x1fc30f50d0051e95(["plot_sample_size_consumer"]):::uptodate
     x43d5dd88718ec163(["model_median_sample_size_consumer"]):::uptodate --> x1fc30f50d0051e95(["plot_sample_size_consumer"]):::uptodate
@@ -234,8 +249,16 @@ graph LR
     x9ebeb9a32f4fbe45(["sim_sample_size_consumer"]):::uptodate --> x1fc30f50d0051e95(["plot_sample_size_consumer"]):::uptodate
     xad49654a44770e0a(["slopes_CI_sample_size_consumer"]):::uptodate --> x1fc30f50d0051e95(["plot_sample_size_consumer"]):::uptodate
     x407f420266f7cba3(["slopes_median_sample_size_consumer"]):::uptodate --> x1fc30f50d0051e95(["plot_sample_size_consumer"]):::uptodate
+    x591bcbf82eb648c3>"simulate_food_web"]:::uptodate --> xedfdc913389bf9d2(["sim_food_web"]):::uptodate
+    xb36606d044598292{{"nrep"}}:::uptodate --> x5731469b81dfc1b5(["sim_baselines"]):::uptodate
+    x28f1d3113c9459b8>"run_simulations_baselines"]:::uptodate --> x5731469b81dfc1b5(["sim_baselines"]):::uptodate
     xd40414fd87cf9ff3>"fit_sample_size_effect"]:::uptodate --> x43d5dd88718ec163(["model_median_sample_size_consumer"]):::uptodate
     x9ebeb9a32f4fbe45(["sim_sample_size_consumer"]):::uptodate --> x43d5dd88718ec163(["model_median_sample_size_consumer"]):::uptodate
+    x38ddd0f39dee6000>"get_performance_pk"]:::uptodate --> x6721637a114517cc(["performance_pk"]):::uptodate
+    xb36606d044598292{{"nrep"}}:::uptodate --> x6721637a114517cc(["performance_pk"]):::uptodate
+    x5731469b81dfc1b5(["sim_baselines"]):::uptodate --> x6721637a114517cc(["performance_pk"]):::uptodate
+    x3523f25b730a048c(["baseline_contrast_curves"]):::uptodate --> x82b295690843aae2(["coverage_contrast_summary"]):::uptodate
+    xcda304b8255aaced>"summarise_coverage_contrast"]:::uptodate --> x82b295690843aae2(["coverage_contrast_summary"]):::uptodate
     xc89be4ed5763b132{{"controller"}}:::uptodate --> xc89be4ed5763b132{{"controller"}}:::uptodate
   end
   classDef uptodate stroke:#000000,color:#ffffff,fill:#354823;
@@ -243,7 +266,7 @@ graph LR
   linkStyle 0 stroke-width:0px;
   linkStyle 1 stroke-width:0px;
   linkStyle 2 stroke-width:0px;
-  linkStyle 77 stroke-width:0px;
+  linkStyle 100 stroke-width:0px;
 ```
 
 ## Computational environment
