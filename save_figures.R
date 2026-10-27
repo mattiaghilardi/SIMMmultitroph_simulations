@@ -137,3 +137,13 @@ purrr::map2(
   patchwork::plot_annotation(tag_levels = "A") &
   theme(legend.position = "bottom")
 ggsave("figures/pp_check_models_sample_size.png", width = 18, height = 14, units = "cm")
+
+# TDF SD none
+tar_read(plot_tdf_sd_none)
+ggsave("figures/plot_tdf_sd_none.png", width = 20, height = 20, units = "cm")
+# TDF SD per individual
+tar_read(plot_tdf_sd_per_individual)
+ggsave("figures/plot_tdf_sd_per_individual.png", width = 20, height = 20, units = "cm")
+# TDF offset
+tar_read(plot_sim_tdf_offset)
+ggsave("figures/plot_sim_tdf_offset.png", width = 18, height = 18, units = "cm")

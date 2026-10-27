@@ -20,10 +20,74 @@ tar_option_set(packages = c("tibble", "readr", "dplyr", "tidyr", "purrr", "rlang
                seed = 25)
 
 # Load functions
-targets::tar_source()
+tar_source()
 
-# Set number of simulations
+# Number of replicates for the baseline and sample-size simulations
+# (the TDF uncertainty simulations use nrep_tdf() below)
 nrep <- 100
+
+# TDF uncertainty simulations ------------------------------------------------
+# One target per simulation and consumer sample size, so that each is saved
+# when it finishes and targets can run in parallel on the crew workers.
+# Data are seeded per replicate inside the functions, so results do not depend
+# on how the simulations are split into targets.
+
+# Number of replicates by consumer sample size (more at n = 1, where estimates vary most)
+nrep_tdf <- function(n) if (n == 1) 50 else 25
+sample_sizes_tdf <- c(1, 5, 10, 20)
+tdf_sd_levels_fit <- c("zero", "one_step", "scaled_TP")
+
+# Error structures by sample size (process only at n = 1)
+err_for <- function(n) {
+  if (n == 1) "process"
+  else if (n == 20) "process_residual"
+  else c("process_residual", "process")
+}
+
+# Combine targets with dplyr::bind_rows()
+combine_target <- function(name, parts) {
+  tar_target_raw(name, as.call(c(quote(dplyr::bind_rows), purrr::map(parts, as.symbol))))
+}
+
+# TDF SD supplied to MixSIAR, without or with individual variation in TDF
+grid_tdf_sd <- expand.grid(tdf_variation = c("none", "per_individual"),
+                           n = sample_sizes_tdf,
+                           stringsAsFactors = FALSE)
+
+targets_tdf_sd <- purrr::map2(grid_tdf_sd$tdf_variation, grid_tdf_sd$n, function(v, n) {
+  tar_target_raw(
+    name = paste("sim_tdf_sd", v, n, sep = "_"),
+    command = bquote(run_simulations_tdf_sd(sim_food_web,
+                                            sample_size = .(n),
+                                            nrep = .(nrep_tdf(n)),
+                                            C = 40,
+                                            tdf_variation = .(v),
+                                            error_structures = .(err_for(n)),
+                                            tdf_sd_levels = .(tdf_sd_levels_fit),
+                                            run = "short"))
+  )
+})
+
+# Misspecified mean TDF
+targets_tdf_offset <- purrr::map(sample_sizes_tdf, function(n) {
+  tar_target_raw(
+    name = paste("sim_tdf_offset", n, sep = "_"),
+    command = bquote(run_simulations_tdf_offset(sim_food_web,
+                                                sample_size = .(n),
+                                                nrep = .(nrep_tdf(n)),
+                                                C = 40,
+                                                tdf_variation = "none",
+                                                tdf_sd_levels = .(tdf_sd_levels_fit),
+                                                error_structures = "process_residual",
+                                                run = "short"))
+  )
+})
+
+targets_tdf_combined <- list(
+  combine_target("sim_tdf_sd_none", paste0("sim_tdf_sd_none_", sample_sizes_tdf)),
+  combine_target("sim_tdf_sd_per_individual", paste0("sim_tdf_sd_per_individual_", sample_sizes_tdf)),
+  combine_target("sim_tdf_offset_all", paste0("sim_tdf_offset_", sample_sizes_tdf))
+)
 
 # Pipeline
 list(
@@ -116,6 +180,20 @@ list(
                                                               .width = ppoints(50),
                                                               alpha_points = 0.2,
                                                               limits = dplyr::filter(limits_sample_size, 
-                                                                                     simulation == "source")))
+                                                                                     simulation == "source"))),
+  
+  # Simulations with TDF uncertainty
+  targets_tdf_sd,
+  targets_tdf_offset,
+  targets_tdf_combined,
+  tar_target(performance_tdf_sd, summarise_tdf_sd(dplyr::bind_rows(sim_tdf_sd_none,
+                                                                   sim_tdf_sd_per_individual))),
+  tar_target(plot_tdf_sd_none, plot_tdf_sd(sim_tdf_sd_none,
+                                           limits = dplyr::filter(limits_sample_size,
+                                                                  simulation == "consumer"))),
+  tar_target(plot_tdf_sd_per_individual, plot_tdf_sd(sim_tdf_sd_per_individual,
+                                                     limits = dplyr::filter(limits_sample_size,
+                                                                            simulation == "consumer"))),
+  tar_target(performance_tdf_offset, summarise_tdf_offset(sim_tdf_offset_all)),
+  tar_target(plot_sim_tdf_offset, plot_tdf_offset(sim_tdf_offset_all, sim_food_web))
 )
-# ~13 hours
