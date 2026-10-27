@@ -19,10 +19,6 @@ get_performance_pk <- function(sim_baselines, nrep = 100) {
          abs_error = abs(alpha_median - alpha_observed))
 }
 
-# performance_pk |> 
-#   group_by(n_baselines) |> 
-#   summarise(prop_within_95CI = sum(within_95CI) / n())
-
 #' Compute the absolute error in TP and the proportion of true TP within the 95% CI
 #'
 #' @param sim_baselines Output of [run_simulations_baselines()]
