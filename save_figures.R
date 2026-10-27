@@ -10,17 +10,17 @@ library(dplyr)
 # create figures folder
 if (!dir.exists("figures")) dir.create("figures")
 
-# Maximum absolute error in estimated source proportions
-tar_read(plot_baseline) &
-  theme_bw(base_size = 7) +
-  theme(strip.text.x = ggtext::element_markdown(face = "italic"),
-        axis.title.y = ggtext::element_markdown())
-withr::with_seed(25, # seed to reproduce jittered positions
-                 ggsave("figures/sim_baseline.png", width = 8, height = 10, units = "cm"))
-
 # Fig 2
 tar_read(plot_pk_vs_tp)
 ggsave("figures/pk_vs_tp_error.png", width = 18, height = 18, units = "cm")
+
+# Contrasts between one and two baselines
+tar_read(plot_contrasts_baselines)
+ggsave("figures/contrasts_baselines.png", width = 18, height = 12, units = "cm")
+
+# Observed vs analytical TP error
+tar_read(plot_tp_error_analytic)
+ggsave("figures/tp_error_analytic.png", width = 18, height = 9, units = "cm")
 
 # Fig 3
 tar_read(plot_sample_size_consumer)
@@ -95,14 +95,26 @@ tar_read(sim_food_web)$isospace_plot
 ggsave("figures/simulated_food_web.png", width = 16, height = 10, units = "cm")
 
 # PP checks brms models
-set.seed(25) # seed to reproduce sampled draws
-# Baselines
-"model_baseline"|>
-  tar_read_raw() |>
-  brms::pp_check(ndraws = 100) +
-  xlab("Max absolute error in <i>p<sub>k</sub></i>") +
-  theme(axis.title.x = ggtext::element_markdown())
+# Max absolute error in pk
+withr::with_seed(25, # seed to reproduce sampled draws
+                 "model_baseline"|>
+                   tar_read_raw() |>
+                   brms::pp_check(ndraws = 100) +
+                   xlab("Max absolute error in <i>p<sub>k</sub></i>") +
+                   theme(axis.title.x = ggtext::element_markdown()))
 ggsave("figures/pp_check_model_baselines.png", width = 12, height = 10, units = "cm")
+# Coverage  of 95% CI of pk
+baseline_labeller <- as_labeller(c(`1` = "One baseline", `2` = "Two baselines"))
+withr::with_seed(25, # seed to reproduce sampled draws
+                 "model_coverage_tp_error" |>
+                   tar_read_raw() |>
+                   brms::pp_check(type = "bars_grouped", group = "n_baselines", ndraws = NULL) +
+                   facet_wrap(~ group, labeller = baseline_labeller) +
+                   scale_x_continuous(breaks = c(0, 1),
+                                      labels = c("Not included", "Included")) +
+                   labs(x = "True <i>p<sub>k</sub></i> within 95% CI") +
+                   theme(axis.title.x = ggtext::element_markdown()))
+ggsave("figures/pp_check_model_coverage.png", width = 12, height = 10, units = "cm")
 # Sample size
 purrr::map2(
   .x = c("model_median_sample_size_consumer",
@@ -113,14 +125,25 @@ purrr::map2(
          "95% CI of <i>p<sub>k</sub></i>",
          "Median <i>p<sub>k</sub></i>",
          "95% CI of <i>p<sub>k</sub></i>"),
-  ~ .x |>
-    tar_read_raw() |>
-    brms::pp_check(ndraws = 100) +
-    xlab(.y) +
-    theme(axis.title.x = ggtext::element_markdown())
+  ~ withr::with_seed(25, # seed to reproduce sampled draws
+                     .x |>
+                       tar_read_raw() |>
+                       brms::pp_check(ndraws = 100) +
+                       xlab(.y) +
+                       theme(axis.title.x = ggtext::element_markdown()))
 ) |>
   patchwork::wrap_plots(ncol = 2) +
   patchwork::plot_layout(guides = "collect", axis_titles = "collect") +
   patchwork::plot_annotation(tag_levels = "A") &
   theme(legend.position = "bottom")
 ggsave("figures/pp_check_models_sample_size.png", width = 18, height = 14, units = "cm")
+
+# TDF SD none
+tar_read(plot_tdf_sd_none)
+ggsave("figures/plot_tdf_sd_none.png", width = 20, height = 20, units = "cm")
+# TDF SD per individual
+tar_read(plot_tdf_sd_per_individual)
+ggsave("figures/plot_tdf_sd_per_individual.png", width = 20, height = 20, units = "cm")
+# TDF offset
+tar_read(plot_sim_tdf_offset)
+ggsave("figures/plot_sim_tdf_offset.png", width = 18, height = 18, units = "cm")
